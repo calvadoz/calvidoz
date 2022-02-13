@@ -1,25 +1,30 @@
 import React, { Component } from "react";
-import { getMovies, deleteMovie } from "../services/fakeMovieService";
+import { getMovies } from "../services/fakeMovieService";
+import Like from "./common/like";
+import Pagination from "./common/pagination";
 
 class Movies extends Component {
   state = {
     movies: getMovies(),
   };
 
+  handleLike = (movie) => {
+    const movies = [...this.state.movies];
+    const index = movies.indexOf(movie);
+    movies[index] = { ...movies[index] };
+    movies[index].isLiked = !movies[index].isLiked;
+    console.log(movies);
+    this.setState({ movies });
+  };
+
   render() {
     const { length: count } = this.state.movies;
+    const itemPerPage = 3;
+    const totalPages = Math.ceil(count / itemPerPage);
 
     if (count === 0) return <p>There is no movie in the database</p>;
     return (
       <React.Fragment>
-        {/* {count > 0 ? (
-          <p>
-            Showing {this.getMovieCount()}
-            {this.getMovieCount() === 1 ? " movie" : " movies"} in the database
-          </p>
-        ) : (
-          <p>There is no movie in the database</p>
-        )} */}
         <p>
           Showing {count} {count === 1 ? " movie" : " movies"} in the database
         </p>
@@ -33,16 +38,23 @@ class Movies extends Component {
                 <th scope="col">Stock</th>
                 <th scope="col">Rate</th>
                 <th scope="col"></th>
+                <th scope="col"></th>
               </tr>
             </thead>
             <tbody>
               {this.state.movies.map((movie) => (
                 <tr key={movie._id}>
-                  <th>{movie.title}</th>
-                  <th>{movie.genre.name}</th>
-                  <th>{movie.numberInStock}</th>
-                  <th>{movie.dailyRentalRate}</th>
-                  <th>
+                  <td>{movie.title}</td>
+                  <td>{movie.genre.name}</td>
+                  <td>{movie.numberInStock}</td>
+                  <td>{movie.dailyRentalRate}</td>
+                  <td>
+                    <Like
+                      isLiked={movie.isLiked}
+                      onClick={() => this.handleLike(movie)}
+                    />
+                  </td>
+                  <td>
                     <button
                       style={{ textTransform: "uppercase" }}
                       onClick={() => this.onDeleteMovie(movie)}
@@ -50,12 +62,13 @@ class Movies extends Component {
                     >
                       Delete
                     </button>
-                  </th>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         )}
+        <Pagination />
       </React.Fragment>
     );
   }
