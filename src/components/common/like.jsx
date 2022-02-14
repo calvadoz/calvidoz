@@ -1,10 +1,9 @@
-const Like = (props) => {
-  const { isLiked } = props;
+const Like = ({ isLiked, onClick }) => {
   return (
     <span
       style={{ cursor: "pointer" }}
       className={`fa ${isLiked ? "fa-heart" : "fa-heart-o"}`}
-      onClick={props.onClick}
+      onClick={onClick}
     ></span>
   );
 };
